@@ -1,10 +1,12 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 
 async function getEvent() {
   try {
-    const event = await prisma.event.findFirst({
+    return await prisma.event.findFirst({
       where: { isPublished: true },
       include: {
         settings: true,
@@ -17,7 +19,6 @@ async function getEvent() {
         },
       },
     });
-    return event;
   } catch {
     return null;
   }
