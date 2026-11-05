@@ -1,8 +1,15 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function AboutPage() {
-  const event = await prisma.event.findFirst({ where: { isPublished: true } });
+  let event = null;
+  try {
+    event = await prisma.event.findFirst({ where: { isPublished: true } });
+  } catch {
+    // DB not ready during build or missing env — render static fallbacks
+  }
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
@@ -23,7 +30,7 @@ export default async function AboutPage() {
           {event?.name || "Fashion & Lifestyle Week"}
         </h1>
         <div className="prose prose-neutral max-w-none text-[#444] leading-relaxed space-y-6">
-          <p>{event?.description}</p>
+          <p>{event?.description || "A premier celebration of fashion, design, and lifestyle."}</p>
           <p>
             This week-long platform brings together fashion designers, styling professionals,
             lifestyle brands, retailers, students, and enthusiasts for runway showcases, curated
@@ -38,12 +45,12 @@ export default async function AboutPage() {
         <div className="mt-16 grid sm:grid-cols-2 gap-8 text-sm">
           <div>
             <p className="text-xs tracking-widest uppercase text-[#999] mb-2">Organizer</p>
-            <p>{event?.organizerName}</p>
+            <p>{event?.organizerName || "Event Organizer"}</p>
             <p className="text-[#666]">{event?.organizerEmail}</p>
           </div>
           <div>
             <p className="text-xs tracking-widest uppercase text-[#999] mb-2">Venue</p>
-            <p>{event?.venueName}</p>
+            <p>{event?.venueName || "TBA"}</p>
             <p className="text-[#666]">{event?.venueAddress}</p>
           </div>
         </div>
