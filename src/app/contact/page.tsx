@@ -1,8 +1,13 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function ContactPage() {
-  const event = await prisma.event.findFirst({ where: { isPublished: true } });
+  let event = null;
+  try {
+    event = await prisma.event.findFirst({ where: { isPublished: true } });
+  } catch {}
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
@@ -17,12 +22,12 @@ export default async function ContactPage() {
         <div className="space-y-6 text-[#444]">
           <div>
             <p className="text-xs tracking-widest uppercase text-[#999] mb-1">Organizer</p>
-            <p>{event?.organizerName}</p>
+            <p>{event?.organizerName || "Event Organizer"}</p>
           </div>
           <div>
             <p className="text-xs tracking-widest uppercase text-[#999] mb-1">Email</p>
-            <a href={`mailto:${event?.organizerEmail}`} className="text-[#c9a227] hover:underline">
-              {event?.organizerEmail}
+            <a href={`mailto:${event?.organizerEmail || "hello@example.com"}`} className="text-[#c9a227] hover:underline">
+              {event?.organizerEmail || "hello@example.com"}
             </a>
           </div>
           {event?.organizerPhone && (

@@ -1,14 +1,19 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function ExhibitorsPage() {
-  const event = await prisma.event.findFirst({ where: { isPublished: true } });
-  const exhibitors = event
-    ? await prisma.exhibitor.findMany({
+  let exhibitors: Awaited<ReturnType<typeof prisma.exhibitor.findMany>> = [];
+  try {
+    const event = await prisma.event.findFirst({ where: { isPublished: true } });
+    if (event) {
+      exhibitors = await prisma.exhibitor.findMany({
         where: { eventId: event.id, isPublished: true },
         orderBy: { brandName: "asc" },
-      })
-    : [];
+      });
+    }
+  } catch {}
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">

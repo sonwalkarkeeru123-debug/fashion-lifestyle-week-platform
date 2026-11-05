@@ -1,14 +1,19 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function CompetitionsPage() {
-  const event = await prisma.event.findFirst({ where: { isPublished: true } });
-  const comps = event
-    ? await prisma.stylingCompetition.findMany({
+  let comps: Awaited<ReturnType<typeof prisma.stylingCompetition.findMany>> = [];
+  try {
+    const event = await prisma.event.findFirst({ where: { isPublished: true } });
+    if (event) {
+      comps = await prisma.stylingCompetition.findMany({
         where: { eventId: event.id, isPublished: true },
         include: { categories: true },
-      })
-    : [];
+      });
+    }
+  } catch {}
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">

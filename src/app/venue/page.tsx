@@ -1,8 +1,13 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function VenuePage() {
-  const event = await prisma.event.findFirst({ where: { isPublished: true } });
+  let event = null;
+  try {
+    event = await prisma.event.findFirst({ where: { isPublished: true } });
+  } catch {}
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
