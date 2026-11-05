@@ -1,15 +1,23 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 
 export default async function AgendaPage() {
-  const event = await prisma.event.findFirst({ where: { isPublished: true } });
-  const items = event
-    ? await prisma.agendaItem.findMany({
+  let event = null;
+  let items: Awaited<ReturnType<typeof prisma.agendaItem.findMany>> = [];
+  try {
+    event = await prisma.event.findFirst({ where: { isPublished: true } });
+    if (event) {
+      items = await prisma.agendaItem.findMany({
         where: { eventId: event.id, isPublished: true },
         orderBy: [{ day: "asc" }, { sortOrder: "asc" }],
-      })
-    : [];
+      });
+    }
+  } catch {
+    // DB unavailable during build
+  }
 
   const byDay = items.reduce(
     (acc, item) => {
